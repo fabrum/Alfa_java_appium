@@ -25,9 +25,9 @@ public class TestLogin {
 
     @BeforeEach
     void setUp() throws Exception {
-      driver= Driver.getDriver();
-      loginPage = new LoginPage();
-      firstPage = new FirstPage();
+        driver = Driver.getDriver();
+        loginPage = new LoginPage();
+        firstPage = new FirstPage();
     }
 
     @DisplayName("Запуск приложения")
@@ -37,14 +37,14 @@ public class TestLogin {
     void testAppOpens() {
         loginPage.setScreenshot("OpenLoginPage");
 
-        assertEquals("Вход в Alfa-Test",loginPage.getTitleLogo());
+        assertEquals("Вход в Alfa-Test", loginPage.getTitleLogo());
         assertTrue(loginPage.isUsernameFieldDisplayed());
         assertTrue(loginPage.isPasswordFieldDisplayed());
         assertTrue(loginPage.isLoginButtonDisplayed());
 
-        assertEquals("Логин",loginPage.getLoginFieldText());
-        assertEquals("Пароль",loginPage.getPasswordText());
-        assertEquals("",loginPage.getErrorMessage());
+        assertEquals("Логин", loginPage.getLoginFieldText());
+        assertEquals("Пароль", loginPage.getPasswordText());
+        assertEquals("", loginPage.getErrorMessage());
     }
 
     @DisplayName("Неверный пароль/логин")
@@ -52,21 +52,21 @@ public class TestLogin {
     @Tag("login")
     @Test
     void testInvalidPassword() {
-        loginPage.login("Login","pass");
+        loginPage.login("Login", "pass");
         loginPage.waitLoader();
 
         loginPage.setScreenshot("InvalidPassword");
 
-        assertEquals("Введены неверные данные",loginPage.getErrorMessage());
+        assertEquals("Введены неверные данные", loginPage.getErrorMessage());
 
         loginPage.clearFields();
 
-        loginPage.login("Log","Password");
+        loginPage.login("Log", "Password");
         loginPage.waitLoader();
 
         loginPage.setScreenshot("InvalidLogin");
 
-        assertEquals("Введены неверные данные",loginPage.getErrorMessage());
+        assertEquals("Введены неверные данные", loginPage.getErrorMessage());
     }
 
     @DisplayName("проверка максимвльной длинны для пароль/логин")
@@ -74,16 +74,16 @@ public class TestLogin {
     @Tag("login")
     @Test
     void textFieldMaximumLength() {
-        String string51="qewrkljhewrjklhqejklerjkerwjhklewrjkhqewkjhlqerwjlq";
+        String string51 = "qewrkljhewrjklhqejklerjkerwjhklewrjkhqewkjhlqerwjlq";
         loginPage.setUsername(string51);
         loginPage.setScreenshot("UserName51Symbol");
-        assertEquals(string51.replaceFirst(".$", ""),loginPage.getLoginFieldText());
+        assertEquals(string51.replaceFirst(".$", ""), loginPage.getLoginFieldText());
 
         loginPage.clearFields();
 
         loginPage.setPassword(string51);
         loginPage.setScreenshot("Password51Symbol");
-        assertEquals(string51.replaceFirst(".$", ""),loginPage.getPasswordText());
+        assertEquals(string51.replaceFirst(".$", ""), loginPage.getPasswordText());
     }
 
     @DisplayName("проверка допуступных сивалов пароль/логин")
@@ -92,36 +92,36 @@ public class TestLogin {
     @Tag("login")
     @Test
     void textFieldValidation() {
-        String stringEng="qazeqSDQWEFA";
-        String stringRus="фвййцвЯУКУЙц";
-        String stringSpecialCharacterAvailable=" . , / ' _ -";
-        String stringSpecialCharacterNotAvailable="\\|$%&?+#";
-        String stringNumbers="1234567890";
+        String stringEng = "qazeqSDQWEFA";
+        String stringRus = "фвййцвЯУКУЙц";
+        String stringSpecCharAvailable = " . , / ' _ -";
+        String stringSpecCharNotAvailable = "\\|$%&?+#";
+        String stringNumbers = "1234567890";
 
         //Login
         loginPage.setUsername(stringEng);
         loginPage.setScreenshotLoginField("LoginFieldTextStringEng");
-        assertEquals(stringEng,loginPage.getLoginFieldText());
+        assertEquals(stringEng, loginPage.getLoginFieldText());
         loginPage.clearFields();
 
         loginPage.setUsername(stringRus);
         loginPage.setScreenshotLoginField("LoginFieldTextStringRus");
-        assertEquals("",loginPage.getLoginFieldText());
+        assertEquals("", loginPage.getLoginFieldText());
         loginPage.clearFields();
 
-        loginPage.setUsername(stringSpecialCharacterAvailable);
+        loginPage.setUsername(stringSpecCharAvailable);
         loginPage.setScreenshotLoginField("LoginFieldTextStringSpecialCharacterAvailable");
-        assertEquals(stringSpecialCharacterAvailable,loginPage.getLoginFieldText());
+        assertEquals(stringSpecCharAvailable, loginPage.getLoginFieldText());
         loginPage.clearFields();
 
-        loginPage.setUsername(stringSpecialCharacterNotAvailable);
+        loginPage.setUsername(stringSpecCharNotAvailable);
         loginPage.setScreenshotLoginField("LoginFieldTextStringSpecialCharacterNotAvailable");
-        assertEquals("",loginPage.getLoginFieldText());
+        assertEquals("", loginPage.getLoginFieldText());
         loginPage.clearFields();
 
         loginPage.setUsername(stringNumbers);
         loginPage.setScreenshotLoginField("LoginFieldTextStringNumbers");
-        assertEquals("",loginPage.getLoginFieldText());
+        assertEquals("", loginPage.getLoginFieldText());
         loginPage.clearFields();
 
         //Password
@@ -129,27 +129,22 @@ public class TestLogin {
 
         loginPage.setPassword(stringEng);
         loginPage.setScreenshotPasswordField("PasswordFieldStringEng");
-        assertEquals(stringEng,loginPage.getPasswordText());
+        assertEquals(stringEng, loginPage.getPasswordText());
         loginPage.clearFields();
 
         loginPage.setPassword(stringRus);
         loginPage.setScreenshotPasswordField("PasswordFieldStringRus");
-        assertEquals(stringRus,loginPage.getPasswordText());
+        assertEquals(stringRus, loginPage.getPasswordText());
         loginPage.clearFields();
 
-        loginPage.setPassword(stringSpecialCharacterAvailable);
+        loginPage.setPassword(stringSpecCharAvailable + stringSpecCharNotAvailable);
         loginPage.setScreenshotPasswordField("PasswordFieldStringSpecialCharacterAvailable");
-        assertEquals(stringSpecialCharacterAvailable,loginPage.getPasswordText());
-        loginPage.clearFields();
-
-        loginPage.setPassword(stringSpecialCharacterNotAvailable);
-        loginPage.setScreenshotPasswordField("PasswordFieldStringSpecialCharacterNotAvailable");
-        assertEquals(stringSpecialCharacterNotAvailable,loginPage.getPasswordText());
+        assertEquals(stringSpecCharAvailable + stringSpecCharNotAvailable, loginPage.getPasswordText());
         loginPage.clearFields();
 
         loginPage.setPassword(stringNumbers);
         loginPage.setScreenshotPasswordField("PasswordFieldStringNumbers");
-        assertEquals(stringNumbers,loginPage.getPasswordText());
+        assertEquals(stringNumbers, loginPage.getPasswordText());
         loginPage.clearFields();
     }
 
@@ -160,17 +155,17 @@ public class TestLogin {
     void testShowPassword() {
         loginPage.setPassword("Password");
 
-        assertEquals("true",loginPage.passwordIsHidden());
+        assertEquals("true", loginPage.passwordIsHidden());
         loginPage.setScreenshotPasswordField("passwordHidden");
 
         loginPage.clickShowPassword();
 
-        assertEquals("false",loginPage.passwordIsHidden());
+        assertEquals("false", loginPage.passwordIsHidden());
         loginPage.setScreenshotPasswordField("passwordShow");
 
         loginPage.clickShowPassword()
         ;
-        assertEquals("true",loginPage.passwordIsHidden());
+        assertEquals("true", loginPage.passwordIsHidden());
         loginPage.setScreenshotPasswordField("passwordHiddenAgain");
     }
 
@@ -179,7 +174,7 @@ public class TestLogin {
     @Tag("login")
     @Test
     void testSuccessfulLogin() {
-        loginPage.login("Login","Password");
+        loginPage.login("Login", "Password");
         loginPage.waitLoader();
 
         loginPage.setScreenshot("SuccessfulLogin");
@@ -190,6 +185,6 @@ public class TestLogin {
 
     @AfterEach
     void tearDown() {
-       Driver.quitDriver();
+        Driver.quitDriver();
     }
 }
