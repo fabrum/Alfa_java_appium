@@ -27,12 +27,12 @@ public class LoginPage extends BasePage {
     @AndroidFindBy(xpath = "//android.widget.FrameLayout[@resource-id='com.alfabank.qapp:id/loader']")
     private WebElement loader;
 
-    public LoginPage enterUsername(String username) {
+    public LoginPage setUsername(String username) {
         typeText(loginField, username);
         return this;
     }
 
-    public LoginPage enterPassword(String password) {
+    public LoginPage setPassword(String password) {
         typeText(passwordField, password);
         return this;
     }
@@ -42,8 +42,8 @@ public class LoginPage extends BasePage {
     }
 
     public void login(String username, String password) {
-        enterUsername(username);
-        enterPassword(password);
+        setUsername(username);
+        setPassword(password);
         clickLogin();
     }
 
@@ -92,7 +92,11 @@ public class LoginPage extends BasePage {
         return getText(titleLogo);
     }
 
-    public void ScreenshotPasswordField(String name) {
+    public void setScreenshotPasswordField(String name) {
         setElementScreenshot(passwordField, name);
+    }
+
+    public void setScreenshotLoginField(String name) {
+        setElementScreenshot(loginField, name);
     }
 }
