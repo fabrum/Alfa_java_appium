@@ -1,6 +1,7 @@
 import exp.appium.Driver;
 import exp.pages.LoginPage;
 import exp.pages.FirstPage;
+import exp.utils.RegexSearch;
 
 import io.appium.java_client.AppiumDriver;
 
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,6 +41,7 @@ public class TestLogin {
         loginPage.setScreenshot("OpenLoginPage");
 
         assertEquals("Вход в Alfa-Test", loginPage.getTitleLogo());
+        assertEquals("Alfa", RegexSearch.findFirstAlfa(loginPage.getTitleLogo()));
         assertTrue(loginPage.isUsernameFieldDisplayed());
         assertTrue(loginPage.isPasswordFieldDisplayed());
         assertTrue(loginPage.isLoginButtonDisplayed());
