@@ -2,6 +2,7 @@ import exp.appium.Driver;
 import exp.pages.LoginPage;
 import exp.pages.FirstPage;
 import exp.utils.RegexSearch;
+import exp.utils.ConfigReader;
 
 import io.appium.java_client.AppiumDriver;
 
@@ -17,7 +18,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestLogin {
-    private AppiumDriver driver;
     private LoginPage loginPage;
     private FirstPage firstPage;
 
@@ -28,7 +28,6 @@ public class TestLogin {
 
     @BeforeEach
     void setUp() throws Exception {
-        driver = Driver.getDriver();
         loginPage = new LoginPage();
         firstPage = new FirstPage();
     }
@@ -55,8 +54,10 @@ public class TestLogin {
     @Tag("negative")
     @Tag("login")
     @Test
-    void testInvalidPassword() {
-        loginPage.login("Login", "pass");
+    void testInvalidPasswordAndLogin() {
+        String login = ConfigReader.getLogin();
+        String password =ConfigReader.getPassword();
+        loginPage.login(login, "pass");
         loginPage.waitLoader();
 
         loginPage.setScreenshot("InvalidPassword");
@@ -65,7 +66,7 @@ public class TestLogin {
 
         loginPage.clearFields();
 
-        loginPage.login("Log", "Password");
+        loginPage.login("Log", password);
         loginPage.waitLoader();
 
         loginPage.setScreenshot("InvalidLogin");
@@ -79,8 +80,8 @@ public class TestLogin {
     @Test
     void textFieldMaximumLength() {
         String string51 = "qewrkljhewrjklhqejklerjkerwjhklewrjkhqewkjhlqerwjlq";
-        loginPage.setUsername(string51);
-        loginPage.setScreenshot("UserName51Symbol");
+        loginPage.setUsername(string51).setScreenshot("UserName51Symbol");
+
         assertEquals(string51.replaceFirst(".$", ""), loginPage.getLoginFieldText());
 
         loginPage.clearFields();
@@ -178,7 +179,7 @@ public class TestLogin {
     @Tag("login")
     @Test
     void testSuccessfulLogin() {
-        loginPage.login("Login", "Password");
+        loginPage.login(ConfigReader.getLogin(), ConfigReader.getPassword());
         loginPage.waitLoader();
 
         loginPage.setScreenshot("SuccessfulLogin");

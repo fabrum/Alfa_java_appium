@@ -14,7 +14,7 @@ public class ScreenshotUtils {
     private static String timestamp;
 
     public ScreenshotUtils() {
-        this.driver = Driver.getDriver();;
+        this.driver = Driver.getDriver();
         this.basePath = System.getProperty("user.dir") + "/screenshots/";
         createDirectory(basePath);
         setTimestamp(basePath);

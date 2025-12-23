@@ -1,5 +1,6 @@
 package exp.appium;
 
+import exp.utils.ConfigReader;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
@@ -23,14 +24,14 @@ public class Driver {
     private static void initializeDriver() {
         try {
             UiAutomator2Options options = new UiAutomator2Options()
-                    .setDeviceName("emulator-5554")
-                    .setPlatformVersion("16.0")
-                    .setApp(System.getProperty("user.dir").replace("\\", "/") + "/test-apps/app-debug.apk")
-                    .setAppPackage("com.alfabank.qapp")
-                    .setNewCommandTimeout(Duration.ofMillis(300))
-                    .setFullReset(true);
+                    .setDeviceName(ConfigReader.getAndroidDeviceName())
+                    .setPlatformVersion(ConfigReader.getAndroidVersion())
+                    .setApp(System.getProperty("user.dir").replace("\\", "/") + ConfigReader.getApkPath())
+                    .setAppPackage(ConfigReader.getApkPackage())
+                    .setNewCommandTimeout(ConfigReader.getAppiumCommandTimeout())
+                    .setFullReset(ConfigReader.getAppiumReset());
 
-            URL url = new URL("http://127.0.0.1:4723");
+            URL url = new URL(ConfigReader.getAppiumUrl());
 
             driver = new AndroidDriver(url, options);
             System.out.println("Драйвер создан!");
