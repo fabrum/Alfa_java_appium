@@ -72,8 +72,8 @@ public class LoginPage extends BasePage {
         passwordField.clear();
     }
 
-    public String passwordIsHidden() {
-        return  getAttribute(passwordField,"password");
+    public Boolean passwordIsHidden() {
+        return   Boolean.parseBoolean(getAttribute(passwordField,"password"));
     }
 
     public String getPasswordText() {

@@ -12,14 +12,21 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
 
-import java.util.List;
+import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.CsvSource;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SoftAssertionsExtension.class)
 public class TestLogin {
     private LoginPage loginPage;
     private FirstPage firstPage;
+
 
     @BeforeAll
     static void setupAll() {
@@ -38,23 +45,24 @@ public class TestLogin {
     @Test
     void testAppOpens() {
         loginPage.setScreenshot("OpenLoginPage");
+        assertAll("проверка всех елементов",
+                () -> assertEquals("Вход в Alfa-Test", loginPage.getTitleLogo(),"текст Title"),
+                () -> assertEquals("Alfa", RegexSearch.findFirstAlfa(loginPage.getTitleLogo())),
+                () -> assertTrue(loginPage.isUsernameFieldDisplayed()),
+                () -> assertTrue(loginPage.isPasswordFieldDisplayed()),
+                () -> assertTrue(loginPage.isLoginButtonDisplayed()),
 
-        assertEquals("Вход в Alfa-Test", loginPage.getTitleLogo());
-        assertEquals("Alfa", RegexSearch.findFirstAlfa(loginPage.getTitleLogo()));
-        assertTrue(loginPage.isUsernameFieldDisplayed());
-        assertTrue(loginPage.isPasswordFieldDisplayed());
-        assertTrue(loginPage.isLoginButtonDisplayed());
-
-        assertEquals("Логин", loginPage.getLoginFieldText());
-        assertEquals("Пароль", loginPage.getPasswordText());
-        assertEquals("", loginPage.getErrorMessage());
+                () -> assertEquals("Логин", loginPage.getLoginFieldText(),"значение пароля"),
+                () -> assertEquals("Пароль", loginPage.getPasswordText()),
+                () -> assertEquals("", loginPage.getErrorMessage())
+        );
     }
 
     @DisplayName("Неверный пароль/логин")
     @Tag("negative")
     @Tag("login")
     @Test
-    void testInvalidPasswordAndLogin() {
+    void testInvalidPasswordAndLogin(SoftAssertions softly) {
         String login = ConfigReader.getLogin();
         String password =ConfigReader.getPassword();
         loginPage.login(login, "pass");
@@ -62,7 +70,8 @@ public class TestLogin {
 
         loginPage.setScreenshot("InvalidPassword");
 
-        assertEquals("Введены неверные данные", loginPage.getErrorMessage());
+        softly.assertThat(loginPage.getErrorMessage())
+                .isEqualTo("Введены неверные данные");
 
         loginPage.clearFields();
 
@@ -70,107 +79,78 @@ public class TestLogin {
         loginPage.waitLoader();
 
         loginPage.setScreenshot("InvalidLogin");
-
-        assertEquals("Введены неверные данные", loginPage.getErrorMessage());
+        softly.assertThat(loginPage.getErrorMessage())
+                .isEqualTo("Введены неверные данные");
     }
 
     @DisplayName("проверка максимвльной длинны для пароль/логин")
     @Tag("negative")
     @Tag("login")
     @Test
-    void textFieldMaximumLength() {
+    void textFieldMaximumLength(SoftAssertions softly) {
         String string51 = "qewrkljhewrjklhqejklerjkerwjhklewrjkhqewkjhlqerwjlq";
         loginPage.setUsername(string51).setScreenshot("UserName51Symbol");
 
-        assertEquals(string51.replaceFirst(".$", ""), loginPage.getLoginFieldText());
-
+        softly.assertThat(loginPage.getLoginFieldText())
+                .isEqualTo(string51.replaceFirst(".$", ""));
         loginPage.clearFields();
 
         loginPage.setPassword(string51);
         loginPage.setScreenshot("Password51Symbol");
-        assertEquals(string51.replaceFirst(".$", ""), loginPage.getPasswordText());
+        softly.assertThat(loginPage.getPasswordText())
+                .isEqualTo(string51.replaceFirst(".$", ""));
     }
 
-    @DisplayName("проверка допуступных сивалов пароль/логин")
+    @ParameterizedTest(name = "{index} - пароль проверка {2} ")
     @Tag("negative")
     @Tag("positive")
     @Tag("login")
-    @Test
-    void textFieldValidation() {
-        String stringEng = "qazeqSDQWEFA";
-        String stringRus = "фвййцвЯУКУЙц";
-        String stringSpecCharAvailable = " . , / ' _ -";
-        String stringSpecCharNotAvailable = "\\|$%&?+#";
-        String stringNumbers = "1234567890";
+    @CsvSource(value = {
+            "qazeqSDQWEFA, PasswordFieldStringEng, латиницы",
+            "фвййцвЯУКУЙц, PasswordFieldStringRus, русский",
+            " . / ' _ -\\|$%&?+#, PasswordFieldStringSpecialCharacterAvailable, спец симвалы",
+            "1234567890, PasswordFieldStringNumbers, цифры"
+    })
+    void textFieldValidationPassword(String string, String screenName, String name) {
+        loginPage.setPassword(string);
+        loginPage.setScreenshotPasswordField(screenName);
+        assertEquals(string, loginPage.getPasswordText());
+    }
 
-        //Login
-        loginPage.setUsername(stringEng);
-        loginPage.setScreenshotLoginField("LoginFieldTextStringEng");
-        assertEquals(stringEng, loginPage.getLoginFieldText());
-        loginPage.clearFields();
-
-        loginPage.setUsername(stringRus);
-        loginPage.setScreenshotLoginField("LoginFieldTextStringRus");
-        assertEquals("", loginPage.getLoginFieldText());
-        loginPage.clearFields();
-
-        loginPage.setUsername(stringSpecCharAvailable);
-        loginPage.setScreenshotLoginField("LoginFieldTextStringSpecialCharacterAvailable");
-        assertEquals(stringSpecCharAvailable, loginPage.getLoginFieldText());
-        loginPage.clearFields();
-
-        loginPage.setUsername(stringSpecCharNotAvailable);
-        loginPage.setScreenshotLoginField("LoginFieldTextStringSpecialCharacterNotAvailable");
-        assertEquals("", loginPage.getLoginFieldText());
-        loginPage.clearFields();
-
-        loginPage.setUsername(stringNumbers);
-        loginPage.setScreenshotLoginField("LoginFieldTextStringNumbers");
-        assertEquals("", loginPage.getLoginFieldText());
-        loginPage.clearFields();
-
-        //Password
-        loginPage.clickShowPassword();
-
-        loginPage.setPassword(stringEng);
-        loginPage.setScreenshotPasswordField("PasswordFieldStringEng");
-        assertEquals(stringEng, loginPage.getPasswordText());
-        loginPage.clearFields();
-
-        loginPage.setPassword(stringRus);
-        loginPage.setScreenshotPasswordField("PasswordFieldStringRus");
-        assertEquals(stringRus, loginPage.getPasswordText());
-        loginPage.clearFields();
-
-        loginPage.setPassword(stringSpecCharAvailable + stringSpecCharNotAvailable);
-        loginPage.setScreenshotPasswordField("PasswordFieldStringSpecialCharacterAvailable");
-        assertEquals(stringSpecCharAvailable + stringSpecCharNotAvailable, loginPage.getPasswordText());
-        loginPage.clearFields();
-
-        loginPage.setPassword(stringNumbers);
-        loginPage.setScreenshotPasswordField("PasswordFieldStringNumbers");
-        assertEquals(stringNumbers, loginPage.getPasswordText());
-        loginPage.clearFields();
+    @ParameterizedTest(name = "{index} - логин проверка {3} ")
+    @Tag("negative")
+    @Tag("positive")
+    @Tag("login")
+    @CsvSource(value = {
+            "qazeqSDQWEFA, LoginFieldTextStringEng, qazeqSDQWEFA, латиницы",
+            "фвййцвЯУКУЙц, LoginFieldTextStringRus, , русский",
+            " . / ' _ -, LoginFieldTextStringSpecialCharacterAvailable, . / ' _ -, спец симвалы разрешенные",
+            "\\|$%&?+#, LoginFieldTextStringSpecialCharacterNotAvailable, , спец симвалы не разрешенные",
+            "1234567890, LoginFieldTextStringNumbers, , цифры"
+    })
+    void textFieldValidationLogin(String string, String screenName,String rez ,String name) {
+        loginPage.setUsername(string);
+        loginPage.setScreenshotLoginField(screenName);
+        rez = (rez==null)?"":rez;
+        assertEquals(rez, loginPage.getLoginFieldText());
     }
 
     @DisplayName("Показать пароль")
     @Tag("positive")
     @Tag("login")
     @Test
-    void testShowPassword() {
+    void testShowPassword(SoftAssertions softly) {
         loginPage.setPassword("Password");
 
-        assertEquals("true", loginPage.passwordIsHidden());
+        softly.assertThat(loginPage.passwordIsHidden()).isTrue();
         loginPage.setScreenshotPasswordField("passwordHidden");
 
         loginPage.clickShowPassword();
-
-        assertEquals("false", loginPage.passwordIsHidden());
+        softly.assertThat(loginPage.passwordIsHidden()).isFalse();
         loginPage.setScreenshotPasswordField("passwordShow");
 
-        loginPage.clickShowPassword()
-        ;
-        assertEquals("true", loginPage.passwordIsHidden());
+        loginPage.clickShowPassword()        ;
+        softly.assertThat(loginPage.passwordIsHidden()).isTrue();
         loginPage.setScreenshotPasswordField("passwordHiddenAgain");
     }
 
@@ -184,8 +164,10 @@ public class TestLogin {
 
         loginPage.setScreenshot("SuccessfulLogin");
 
-        assertTrue(firstPage.isLogoDisplayed());
-        assertEquals("Вход в Alfa-Test выполнен", firstPage.getTitleLogo());
+        assertAll("успешный вход",
+                () -> assertTrue(firstPage.isLogoDisplayed()),
+                () -> assertEquals("Вход в Alfa-Test выполнен", firstPage.getTitleLogo())
+        );
     }
 
     @AfterEach
