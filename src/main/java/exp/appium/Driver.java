@@ -10,15 +10,15 @@ import java.net.URL;
 import java.time.Duration;
 
 public class Driver {
-    private static AppiumDriver driver;
+    private static ThreadLocal<AppiumDriver> driverThread = new ThreadLocal<>();
 
     private Driver() {}
 
     public static AppiumDriver getDriver() {
-        if (driver == null) {
+        if (driverThread.get()== null) {
             initializeDriver();
         }
-        return driver;
+        return driverThread.get();
     }
 
     private static void initializeDriver() {
@@ -32,8 +32,7 @@ public class Driver {
                     .setFullReset(ConfigReader.getAppiumReset());
 
             URL url = new URL(ConfigReader.getAppiumUrl());
-
-            driver = new AndroidDriver(url, options);
+            driverThread.set(new AndroidDriver(url, options));
             System.out.println("Драйвер создан!");
 
         } catch (MalformedURLException e) {
@@ -42,14 +41,14 @@ public class Driver {
     }
 
     public static void quitDriver() {
-        if (driver != null) {
-            driver.quit();
-            driver = null;
+        if (driverThread.get() != null) {
+            driverThread.get().quit();
+            driverThread.set(null);
             System.out.println("Драйвер закрыт");
         }
     }
 
     public static void getAllElementConsole(){
-        System.out.println(driver.getPageSource());
+        System.out.println(driverThread.get().getPageSource());
     }
 }
