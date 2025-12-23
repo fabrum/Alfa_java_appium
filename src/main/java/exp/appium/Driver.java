@@ -7,10 +7,9 @@ import io.appium.java_client.android.options.UiAutomator2Options;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
 
 public class Driver {
-    private static ThreadLocal<AppiumDriver> driverThread = new ThreadLocal<>();
+    private static final ThreadLocal<AppiumDriver> driverThread = new ThreadLocal<>();
 
     private Driver() {}
 
