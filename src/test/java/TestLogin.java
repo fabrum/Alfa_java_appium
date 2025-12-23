@@ -1,14 +1,10 @@
-import exp.appium.Driver;
 import exp.pages.LoginPage;
 import exp.pages.FirstPage;
 import exp.utils.RegexSearch;
 import exp.utils.ConfigReader;
 
-import io.appium.java_client.AppiumDriver;
-
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -19,19 +15,12 @@ import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.provider.CsvSource;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SoftAssertionsExtension.class)
-public class TestLogin {
+public class TestLogin  extends BaseTest {
     private LoginPage loginPage;
     private FirstPage firstPage;
-
-
-    @BeforeAll
-    static void setupAll() {
-        System.out.println("=== Начало тестового прогона ===");
-    }
 
     @BeforeEach
     void setUp() throws Exception {
@@ -168,10 +157,5 @@ public class TestLogin {
                 () -> assertTrue(firstPage.isLogoDisplayed()),
                 () -> assertEquals("Вход в Alfa-Test выполнен", firstPage.getTitleLogo())
         );
-    }
-
-    @AfterEach
-    void tearDown() {
-        Driver.quitDriver();
     }
 }
